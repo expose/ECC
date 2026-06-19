@@ -6,6 +6,10 @@ const path = require('path');
 const { writeInstallState } = require('../install-state');
 const { filterMcpConfig, parseDisabledMcpServers } = require('../mcp-config');
 const { buildInstallIndex, isNamespacedSource, rewriteRelativeLinks } = require('./link-rewrite');
+const {
+  isCursorRuleDestination,
+  transformRuleContentForCursor,
+} = require('../cursor-rule-format');
 
 function isMarkdownPath(filePath) {
   return /\.(md|mdx|markdown)$/i.test(String(filePath || ''));
@@ -171,6 +175,20 @@ function applyInstallPlan(plan) {
       const sourceConfig = readJsonObject(operation.sourcePath, 'MCP config');
       const filteredConfig = filterMcpConfig(sourceConfig, disabledServers).config;
       fs.writeFileSync(operation.destinationPath, formatJson(filteredConfig), 'utf8');
+      continue;
+    }
+
+    if (
+      operation.kind === 'copy-file'
+      && isCursorRuleDestination(plan, operation.destinationPath)
+    ) {
+      const sourceContent = fs.readFileSync(operation.sourcePath, 'utf8');
+      const basename = path.basename(operation.destinationPath, '.mdc');
+      fs.writeFileSync(
+        operation.destinationPath,
+        transformRuleContentForCursor(sourceContent, basename),
+        'utf8'
+      );
       continue;
     }
 
