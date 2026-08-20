@@ -323,6 +323,20 @@ function runTests() {
       )),
       'Cursor installs should not create .cursor/AGENTS.md'
     );
+    assert.ok(
+      !plan.operations.some(operation => (
+        normalizedRelativePath(operation.sourceRelativePath) === '.agents'
+        || normalizedRelativePath(operation.sourceRelativePath).startsWith('.agents/')
+      )),
+      'Cursor installs should not copy ECC .agents tree (duplicates .cursor/skills)'
+    );
+    assert.ok(
+      !plan.operations.some(operation => (
+        operation.destinationPath === path.join(projectRoot, '.cursor', '.agents')
+        || operation.destinationPath.startsWith(path.join(projectRoot, '.cursor', '.agents') + path.sep)
+      )),
+      'Cursor installs should not create .cursor/.agents'
+    );
   })) passed++; else failed++;
 
   if (test('plans cursor agents with ecc-prefixed filenames to avoid agent collisions', () => {

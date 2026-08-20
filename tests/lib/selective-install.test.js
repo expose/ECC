@@ -417,11 +417,11 @@ function runTests() {
       includeComponentIds: ['capability:orchestration'],
       target: 'cursor',
     });
-    // orchestration module only supports claude, codex, opencode
-    assert.ok(!plan.selectedModuleIds.includes('orchestration'),
-      'Should skip orchestration for cursor target');
-    assert.ok(plan.skippedModuleIds.includes('orchestration'),
-      'Should report orchestration as skipped for cursor');
+    // orchestration module supports cursor (skills/dmux-workflows Ôćĺ .cursor/skills/)
+    assert.ok(plan.selectedModuleIds.includes('orchestration'),
+      'Should select orchestration for cursor target');
+    assert.ok(!plan.skippedModuleIds.includes('orchestration'),
+      'Should not report orchestration as skipped for cursor');
   })) passed++; else failed++;
 
   if (test('--without with agent: component excludes the agent module', () => {

@@ -742,7 +742,8 @@
         "claude",
         "claude-project",
         "codex",
-        "opencode"
+        "opencode",
+        "cursor"
       ],
       "dependencies": [
         "commands-core",

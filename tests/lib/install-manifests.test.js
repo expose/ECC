@@ -211,10 +211,17 @@ function runTests() {
     const plan = resolveInstallPlan({ profileId: 'developer', target: 'cursor', projectRoot });
     assert.ok(plan.selectedModuleIds.includes('rules-core'), 'Should keep rules-core');
     assert.ok(plan.selectedModuleIds.includes('commands-core'), 'Should keep commands-core');
-    assert.ok(!plan.selectedModuleIds.includes('orchestration'),
-      'Should not select unsupported orchestration module for cursor');
-    assert.ok(plan.skippedModuleIds.includes('orchestration'),
-      'Should report unsupported orchestration module as skipped');
+    assert.ok(plan.selectedModuleIds.includes('orchestration'),
+      'Should select orchestration module for cursor (dmux-workflows)');
+    assert.ok(!plan.skippedModuleIds.includes('orchestration'),
+      'Should not skip orchestration for cursor');
+    assert.ok(
+      plan.operations.some(operation => (
+        String(operation.sourceRelativePath || '').replace(/\\/g, '/').includes('skills/dmux-workflows')
+        && String(operation.destinationPath || '').replace(/\\/g, '/').includes('/.cursor/skills/dmux-workflows')
+      )),
+      'Should install dmux-workflows into .cursor/skills/'
+    );
     assert.strictEqual(plan.targetAdapterId, 'cursor-project');
     assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.cursor'));
     assert.strictEqual(plan.installStatePath, path.join(projectRoot, '.cursor', 'ecc-install-state.json'));

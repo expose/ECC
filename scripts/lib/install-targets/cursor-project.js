@@ -8,6 +8,7 @@ const {
   createInstallTargetAdapter,
   createManagedOperation,
   isForeignPlatformPath,
+  normalizeRelativePath,
 } = require('./helpers');
 
 function toCursorRuleFileName(fileName, sourceRelativeFile) {
@@ -138,6 +139,14 @@ module.exports = createInstallTargetAdapter({
       if (sourceRelativePath === 'AGENTS.md') {
         // Cursor treats nested AGENTS.md files as directory context; do not
         // install ECC's root project identity into a host project's .cursor/.
+        return [];
+      }
+
+      if (normalizeRelativePath(sourceRelativePath) === '.agents'
+        || normalizeRelativePath(sourceRelativePath).startsWith('.agents/')) {
+        // Cursor discovers skills from .cursor/skills (via the skills/ module
+        // paths). Copying ECC's .agents tree into .cursor/.agents duplicates
+        // the same SKILL.md entries in the slash-command picker.
         return [];
       }
 
